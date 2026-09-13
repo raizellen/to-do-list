@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name=""viewport" content=""width-device-width, initial-scale="1.0">
+    <meta name="viewport" content=""width-device-width, initial-scale="1.0">
     <title>To Do List</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.css" integrity="sha512-x9WwyMYBnlXMNQ6kQ/Lyzu1NqIhLQKL5Oq6xByfXuRj7s9CskyCbLv/1IjqzJmXwFXWr0ov6jBV7Qbc0hh9nHg==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -11,27 +11,29 @@
 </head>
 
 <body>
-    <div class="container">
-        <div class="app">
-            <h1>To Do List</h1>
-            <div class="stat-container">
-                <div class="details">
-                    <h3>Keep it up!</h3>
-                    <div id="progressbar">
-                        <div id="progress"></div>
+    <div class="levels-container">
+        <div class="container">
+            <div class="app">
+                <h1>To Do List</h1>
+                <div class="stat-container">
+                    <div class="details">
+                        <h3>Keep it up!</h3>
+                        <div class="progressbar">
+                            <div class="progress"></div>
+                        </div>
+                    </div>
+                    <div class="stats-number">
+                        <p class="numbers">0 / 0</p>
                     </div>
                 </div>
-                <div class="stats-number">
-                    <p id="numbers">0 / 0</p>
+                <form class="input-area">
+                    <input type="text" class="task-input" placeholder="Add a new task">
+                    <button type="submit" class="add-task-btn"><i class="fa-solid fa-plus"></i></button>
+                </form>
+                <div class="todo-container">
+                    <ul class="task-list">
+                    </ul>
                 </div>
-            </div>
-            <form class="input-area">
-                <input type="text" id="task-input" placeholder="Add a new task">
-                <button type="submit" id="add-task-btn"><i class="fa-solid fa-plus"></i></button>
-            </form>
-            <div class="todo-container">
-                <ul id="task-list">
-                </ul>
             </div>
         </div>
     </div>
