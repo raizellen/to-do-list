@@ -32,6 +32,40 @@ document.addEventListener('DOMContentLoaded', () => {
     updateProgress();
   }
 
+  const makeDraggable = (li, taskArray, task) => {
+    li.addEventListener('dragstart', () => {
+      li.classList.add('dragging');
+    });
+
+    li.addEventListener('dragend', () => {
+      li.classList.remove('dragging');
+      const items = [...li.parentElement.children];
+      taskArray.sort((a, b) => {
+        const aLi = items.find(item => item.task === a);
+        const bLi = items.find(item => item.task === b);
+        return items.indexOf(aLi) - items.indexOf(bLi);
+      });
+      saveTaskToLocalStorage();
+    });
+
+    li.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      const draggingItem = document.querySelector('.dragging');
+      if (!draggingItem || draggingItem === li) {
+        return;
+      }
+      const items = [...li.parentElement.children];
+      const currentIndex = items.indexOf(draggingItem);
+      const targetIndex = items.indexOf(li);
+
+      if (currentIndex < targetIndex) {
+        li.after(draggingItem);
+      } else {
+        li.before(draggingItem);
+      }
+    });
+  };
+
   const addTask = (text, completed = false, save = true, existingTask = null) => {
     const taskText = text || taskInput.value.trim();
     if(!taskText){
@@ -49,6 +83,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const li = document.createElement('li');
+    li.draggable = true;
+    li.task = task;
     li.innerHTML = `
       <input type="checkbox" class="checkbox" ${completed ? 'checked' : ''}>
       <span>${taskText}</span>
@@ -124,6 +160,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     taskList.appendChild(li);
     taskInput.value = '';
+
+    makeDraggable(li, tasks, task);
     updateProgress();
     if (save) {
       saveTaskToLocalStorage();
@@ -135,11 +173,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const containers = document.querySelectorAll('.levels-container .container');
     const currentIndex = Array.from(containers).indexOf(currentContainer);
 
-    containers.forEach((container, index) => {
-      if (index > currentIndex) {
-        container.remove();
+    const nextContainer = containers[currentIndex + 1];
+
+    if (nextContainer) {
+      const nextTitle = nextContainer.querySelector('h1');
+      if (nextTitle && nextTitle.textContent === task.text) {
+        containers.forEach((container, index) => {
+          if (index > currentIndex) {
+            container.remove();
+          }
+        });
+
+        return;
       }
-    });
+      containers.forEach((container, index) => {
+        if (index > currentIndex) {
+          container.remove();
+        }
+      });
+    }
 
     const container = document.createElement('div');
     container.className = 'container';
@@ -188,6 +240,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     task.subtasks.forEach(subtask => {
       const li = document.createElement('li');
+      li.draggable = true;
+      li.task = subtask;
       li.innerHTML = `
         <input type="checkbox" class="checkbox">
         <span>${subtask.text}</span>
@@ -266,6 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         openSubtasks(subtask, li);
       });
+      makeDraggable(li, task.subtasks, subtask);
     });
 
     const taskInput = container.querySelector('.task-input');
@@ -285,6 +340,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       task.subtasks.push(subtask);
       const li = document.createElement('li');
+      li.draggable = true;
+      li.task = subtask;
       li.innerHTML = `
         <input type="checkbox" class="checkbox">
         <span>${subtask.text}</span>
@@ -337,8 +394,9 @@ document.addEventListener('DOMContentLoaded', () => {
             container.remove();
           }
         });
-        
+
         li.remove();
+
         updateSubtaskProgress();
         saveTaskToLocalStorage();
       });
@@ -367,6 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
         openSubtasks(subtask, li);
       });
 
+      makeDraggable(li, task.subtasks, subtask);
       taskInput.value = '';
       saveTaskToLocalStorage();
       console.log(task.subtasks);

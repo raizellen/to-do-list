@@ -166,6 +166,7 @@ body {
   color: #fff;
   position: relative;
   transition: box-shadow 0.2s ease;
+  cursor: pointer;
 }
 
 .task-list li:hover {
