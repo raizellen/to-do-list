@@ -66,6 +66,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
+  const updateSubtaskCount = (task, counter) => {
+    const total = task.subtasks.length;
+    const completed = task.subtasks.filter(subtask => subtask.completed).length;
+
+    counter.textContent = total > 0
+      ? `${completed} / ${total}`
+      : '';
+  };
+
   const addTask = (text, completed = false, save = true, existingTask = null) => {
     const taskText = text || taskInput.value.trim();
     if(!taskText){
@@ -88,11 +97,15 @@ document.addEventListener('DOMContentLoaded', () => {
     li.innerHTML = `
       <input type="checkbox" class="checkbox" ${completed ? 'checked' : ''}>
       <span>${taskText}</span>
+      <span class="subtask-count"></span>
+
       <div class="task-buttons">
         <button class="edit-btn"><i class="fa-solid fa-pen"></i></button>
         <button class="delete-btn"><i class="fa-solid fa-trash"></i></button>
       </div>
     `;
+    const subtaskCount = li.querySelector('.subtask-count');
+    updateSubtaskCount(task, subtaskCount);
 
     const checkbox = li.querySelector('.checkbox');
     const editBtn = li.querySelector('.edit-btn');
@@ -172,8 +185,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentContainer = li.closest('.container');
     const containers = document.querySelectorAll('.levels-container .container');
     const currentIndex = Array.from(containers).indexOf(currentContainer);
-
     const nextContainer = containers[currentIndex + 1];
+    const parentSubtaskCount = li.querySelector('.subtask-count');
 
     if (nextContainer) {
       const nextTitle = nextContainer.querySelector('h1');
@@ -245,6 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
       li.innerHTML = `
         <input type="checkbox" class="checkbox">
         <span>${subtask.text}</span>
+        <span class="subtask-count"></span>
 
         <div class="task-buttons">
           <button class="edit-btn">
@@ -256,6 +270,10 @@ document.addEventListener('DOMContentLoaded', () => {
           </button>
         </div>
       `;
+
+      const subtaskCount = li.querySelector('.subtask-count');
+      updateSubtaskCount(subtask, subtaskCount);
+      
       taskList.appendChild(li);
       updateSubtaskProgress();
 
@@ -275,6 +293,9 @@ document.addEventListener('DOMContentLoaded', () => {
         subtask.completed = checkbox.checked;
         updateSubtaskProgress();
         li.classList.toggle('completed', checkbox.checked);
+        if (parentSubtaskCount) {
+          updateSubtaskCount(task, parentSubtaskCount);
+        }
         saveTaskToLocalStorage();
       });
       updateSubtaskProgress();
@@ -339,13 +360,17 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       task.subtasks.push(subtask);
+      if(parentSubtaskCount){
+        updateSubtaskCount(task, parentSubtaskCount);
+      }
+
       const li = document.createElement('li');
       li.draggable = true;
       li.task = subtask;
       li.innerHTML = `
         <input type="checkbox" class="checkbox">
         <span>${subtask.text}</span>
-
+        <span class="subtask-count"></span>
         <div class="task-buttons">
           <button class="edit-btn">
             <i class="fa-solid fa-pen"></i>
@@ -373,6 +398,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (index !== -1) {
             task.subtasks.splice(index, 1);
           }
+          updateSubtaskCount(task, parentSubtaskCount);
           li.remove();
           updateSubtaskProgress();
           saveTaskToLocalStorage();
@@ -381,11 +407,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
       deleteBtn.addEventListener('click', (e) => {
         e.stopPropagation();
+        const currentContainer = li.closest('.container');
         const index = task.subtasks.indexOf(subtask);
+
         if(index !== -1){
           task.subtasks.splice(index, 1);
+
+          if (parentSubtaskCount) {
+            updateSubtaskCount(task, parentSubtaskCount);
+          }
         }
-        const currentContainer = li.closest('.container');
         const containers = document.querySelectorAll('.levels-container .container');
         const currentIndex = Array.from(containers).indexOf(currentContainer);
 
@@ -415,6 +446,11 @@ document.addEventListener('DOMContentLoaded', () => {
         editBtn.disabled = checkbox.checked;
         editBtn.style.opacity = checkbox.checked ? '0.5' : '1';
         editBtn.style.pointerEvents = checkbox.checked ? 'none' : 'auto';
+
+        if (parentSubtaskCount) {
+          updateSubtaskCount(task, parentSubtaskCount);
+        }
+
         saveTaskToLocalStorage();
       });
 
