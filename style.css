@@ -164,8 +164,26 @@ body {
   font-size: 1.2rem;
   color: #fff;
   position: relative;
+  overflow: hidden;
   transition: box-shadow 0.2s ease;
   cursor: pointer;
+}
+
+.task-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0%;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 30px 0 0 30px;
+  transition: width 0.3s ease;
+  pointer-events: none;
+}
+
+.task-list li > *:not(.task-progress) {
+  position: relative;
+  z-index: 1;
 }
 
 .task-list li span:first-of-type {
@@ -190,7 +208,7 @@ body {
 }
 
 .task-list li .checkbox:checked {
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(72, 72, 72, 0.5);
   transform: scale(1.1);
 }
 
@@ -200,7 +218,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 .task-list li span {
@@ -209,7 +227,7 @@ body {
   word-wrap: break-word;
 }
 
-.task-list li.completed span {
+.task-list li.completed span:first-of-type {
   text-decoration: 2px line-through grey;
   color: grey;
 }

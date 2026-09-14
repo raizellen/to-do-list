@@ -73,6 +73,13 @@ document.addEventListener('DOMContentLoaded', () => {
     counter.textContent = total > 0
       ? `${completed} / ${total}`
       : '';
+
+      const progress = counter.parentElement.querySelector('.task-progress');
+
+      if (progress) {
+        const percentage = total > 0 ? (completed / total) * 100 : 0;
+        progress.style.width = `${percentage}%`;
+      }
   };
 
   const addTask = (text, completed = false, save = true, existingTask = null) => {
@@ -95,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
     li.draggable = true;
     li.task = task;
     li.innerHTML = `
+      <div class="task-progress"></div>
       <input type="checkbox" class="checkbox" ${completed ? 'checked' : ''}>
       <span>${taskText}</span>
       <span class="subtask-count"></span>
@@ -121,6 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const isChecked = checkbox.checked;
       task.completed = isChecked;
       li.classList.toggle('completed', isChecked);
+      const progress = li.querySelector('.task-progress');
+
+      if (progress) {
+        progress.style.width = isChecked ? '100%' : '0%';
+      }
       editBtn.disabled = isChecked;
       editBtn.style.opacity = isChecked ? '0.5' : '1';
       editBtn.style.pointerEvents = isChecked ? 'none' : 'auto';
@@ -256,6 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
       li.draggable = true;
       li.task = subtask;
       li.innerHTML = `
+        <div class="task-progress"></div>
         <input type="checkbox" class="checkbox">
         <span>${subtask.text}</span>
         <span class="subtask-count"></span>
@@ -368,6 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
       li.draggable = true;
       li.task = subtask;
       li.innerHTML = `
+        <div class="task-progress"></div>
         <input type="checkbox" class="checkbox">
         <span>${subtask.text}</span>
         <span class="subtask-count"></span>
